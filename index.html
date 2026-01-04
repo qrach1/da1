@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Мой билет</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" />
+    <link rel="stylesheet" href="index.css" />
+    <style>
+        /* ТОЛЬКО МИНИМАЛЬНЫЕ ДОПОЛНЕНИЯ */
+        .editable {
+            cursor: pointer;
+            border-bottom: 1px dashed transparent;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+        .editable:hover, .editable:focus {
+            border-bottom: 1px dashed #4b4d57;
+        }
+        .button-12.active .background-13 {
+            background: #f0edf9;
+        }
+        
+        /* ДЛЯ iOS - только безопасные зоны */
+        @supports (padding: max(0px)) {
+            body {
+                padding-top: max(53px, env(safe-area-inset-top));
+                padding-bottom: max(67px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Верхняя фиксированная шапка -->
+    <div class="fixed-header">
+        <div class="groups">
+            <span class="my-ticket">Мой билет</span>
+            <div class="image"></div>
+            <div class="image-1"></div>
+        </div>
+    </div>
+    
+    <!-- ОСНОВНОЙ КОНТЕНТ - НЕ ТРОГАЕМ СТРУКТУРУ -->
+    <div class="main-container">
+        <div class="root">
+            <div class="image-2">
+                <div class="groups-3">
+                    <div class="groups-4">
+                        <div class="background">
+                            <span id="current-time" class="time">14:34</span>
+                            <span id="current-date" class="date">6 декабря</span>
+                            <div class="image-5"></div>
+                        </div>
+                    </div>
+                    <div class="background-6">
+                        <div class="groups-7">
+                            <div class="flex-row">
+                                <div class="background-8"></div>
+                                <span id="countdown-minutes" class="number-44">45</span>
+                                <span id="countdown-seconds" class="number-20">00</span>
+                            </div>
+                            <div class="flex-row-d">
+                                <span class="minutes">Минуты</span>
+                                <span class="seconds">Секунды</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="groups-9">
+                        <div class="background-a"></div>
+                        <div class="groups-b">
+                            <div class="flex-row-bc">
+                                <div class="ticket">
+                                    <span class="ticket-info">1 билет - </span>
+                                    <span class="price">45 </span>
+                                    <span class="currency">₽</span>
+                                </div>
+                                <div class="button">
+                                    <div class="background-c">
+                                        <span class="travel">Проезд</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="mpv-vpopat">МПВ "ВПОПАТ №1"</span>
+                            <div class="image-d"></div>
+                        </div>
+                        <div class="groups-e">
+                            <span id="editable-text" class="ab-531-25 editable" contenteditable="true">AB 531 25</span>
+                            <span id="editable-number" class="no-95 editable" contenteditable="true">№9595</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="groups-f">
+                    <div class="button-10">
+                        <div class="background-11">
+                            <span class="buy-ticket">КУПИТЬ БИЛЕТ</span>
+                        </div>
+                    </div>
+                    <div class="button-12" id="present-button">
+                        <div class="background-13">
+                            <span class="present">предъявить</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Нижнее фиксированное меню - ИСПРАВЛЕН ПОРЯДОК -->
+    <div class="fixed-footer">
+        <div class="background-14">
+            <div class="groups-15">
+                <!-- ПРАВИЛЬНЫЙ ПОРЯДОК: Мой билет, История, Оплата, Меню -->
+                <div class="groups-18">
+                    <div class="image-19"></div>
+                    <span class="my-ticket-1a">Мой билет</span>
+                </div>
+                <div class="groups-16">
+                    <div class="image-17"></div>
+                    <span class="history">История</span>
+                </div>
+                <div class="groups-1b">
+                    <div class="image-1c"></div>
+                    <span class="payment">Оплата</span>
+                </div>
+                <div class="groups-1d">
+                    <div class="image-1e"></div>
+                    <span class="menu">Меню</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. СОХРАНЕНИЕ ВРЕМЕНИ ВХОДА
+        function saveEntryTime() {
+            const now = new Date();
+            
+            if (!localStorage.getItem('entryTimeSaved')) {
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                localStorage.setItem('displayTime', `${hours}:${minutes}`);
+                
+                const day = now.getDate();
+                const monthNames = [
+                    'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+                ];
+                const month = monthNames[now.getMonth()];
+                localStorage.setItem('displayDate', `${day} ${month}`);
+                localStorage.setItem('entryTimeSaved', 'true');
+            }
+            
+            document.getElementById('current-time').textContent = localStorage.getItem('displayTime') || '14:34';
+            document.getElementById('current-date').textContent = localStorage.getItem('displayDate') || '6 декабря';
+        }
+        
+        // 2. ОБРАТНЫЙ ОТСЧЕТ
+        let countdownMinutes = 45;
+        let countdownSeconds = 0;
+        
+        function updateCountdown() {
+            if (countdownSeconds === 0) {
+                if (countdownMinutes === 0) {
+                    countdownMinutes = 45;
+                    countdownSeconds = 0;
+                } else {
+                    countdownMinutes--;
+                    countdownSeconds = 59;
+                }
+            } else {
+                countdownSeconds--;
+            }
+            
+            document.getElementById('countdown-minutes').textContent = 
+                countdownMinutes.toString().padStart(2, '0');
+            document.getElementById('countdown-seconds').textContent = 
+                countdownSeconds.toString().padStart(2, '0');
+        }
+        
+        // 3. РЕДАКТИРУЕМЫЕ ПОЛЯ
+        function setupEditableFields() {
+            const editableText = document.getElementById('editable-text');
+            const editableNumber = document.getElementById('editable-number');
+            
+            function saveToLocalStorage(element, key) {
+                element.addEventListener('blur', function() {
+                    localStorage.setItem(key, this.textContent);
+                });
+                
+                const savedValue = localStorage.getItem(key);
+                if (savedValue) {
+                    element.textContent = savedValue;
+                }
+            }
+            
+            saveToLocalStorage(editableText, 'ticket-text');
+            saveToLocalStorage(editableNumber, 'ticket-number');
+        }
+        
+        // 4. КНОПКА "ПРЕДЪЯВИТЬ"
+        document.getElementById('present-button').addEventListener('click', function() {
+            this.classList.toggle('active');
+        });
+        
+        // 5. ИНИЦИАЛИЗАЦИЯ
+        document.addEventListener('DOMContentLoaded', function() {
+            // Сброс при обновлении
+            if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+                localStorage.removeItem('entryTimeSaved');
+            }
+            
+            saveEntryTime();
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            setupEditableFields();
+            
+            // Простая оптимизация для iOS
+            if ('ontouchstart' in window) {
+                document.documentElement.style.touchAction = 'manipulation';
+            }
+        });
+    </script>
+</body>
+</html>
